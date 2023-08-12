@@ -41,7 +41,72 @@ const Cube = (props: any) => {
 
     let treeArr = []
 
-    
+    let dropletPath = []
+    const genDroplet = () => {
+      const heights = props.array
+      const size = props.dimension 
+  
+      let droplet = {x: Math.floor(Math.random() * size), y: 0, z: Math.floor(Math.random() * size)}
+      droplet.y = heights[droplet.x][droplet.z]
+  
+      dropletPath.push(droplet)
+      while (droplet.y > - 7) {
+        let deltaHeight = {value: 0, lowestDrop: {}}
+        if (heights[droplet.x + 1][droplet.z] < droplet.y) {
+          let tempDeltaHeight = droplet.y - heights[droplet.x + 1][droplet.z]
+          
+          if (tempDeltaHeight > deltaHeight.value) {
+            deltaHeight.value = tempDeltaHeight
+            deltaHeight.lowestDrop = {x: droplet.x + 1, y: heights[droplet.x + 1][droplet.z], z: droplet.z}
+          }
+        } else if (heights[droplet.x][droplet.z + 1] < droplet.y) {
+          let tempDeltaHeight = droplet.y - heights[droplet.x][droplet.z + 1]
+          
+          if (tempDeltaHeight > deltaHeight.value) {
+            deltaHeight.value = tempDeltaHeight
+            deltaHeight.lowestDrop = {x: droplet.x, y: heights[droplet.x][droplet.z + 1], z: droplet.z + 1}
+          } 
+        } else if (heights[droplet.x + 1][droplet.z + 1] < droplet.y) {
+          let tempDeltaHeight = droplet.y - heights[droplet.x + 1][droplet.z + 1]
+          
+          if (tempDeltaHeight > deltaHeight.value) {
+            deltaHeight.value = tempDeltaHeight
+            deltaHeight.lowestDrop = {x: droplet.x + 1, y: heights[droplet.x + 1][droplet.z + 1], z: droplet.z + 1}
+          } 
+        } else if (heights[droplet.x - 1][droplet.z] < droplet.y) {
+          let tempDeltaHeight = droplet.y - heights[droplet.x - 1][droplet.z]
+          
+          if (tempDeltaHeight > deltaHeight.value) {
+            deltaHeight.value = tempDeltaHeight
+            deltaHeight.lowestDrop = {x: droplet.x - 1, y: heights[droplet.x - 1][droplet.z], z: droplet.z}
+          } 
+        } else if (heights[droplet.x][droplet.z - 1] < droplet.y) {
+          let tempDeltaHeight = droplet.y - heights[droplet.x][droplet.z - 1]
+          
+          if (tempDeltaHeight > deltaHeight.value) {
+            deltaHeight.value = tempDeltaHeight
+            deltaHeight.lowestDrop = {x: droplet.x, y: heights[droplet.x][droplet.z - 1], z: droplet.z - 1}
+          } 
+        } else if (heights[droplet.x - 1][droplet.z - 1] < droplet.y) {
+          let tempDeltaHeight = droplet.y - heights[droplet.x - 1][droplet.z - 1]
+          
+          if (tempDeltaHeight > deltaHeight.value) {
+            deltaHeight.value = tempDeltaHeight
+            deltaHeight.lowestDrop = {x: droplet.x - 1, y: heights[droplet.x - 1][droplet.z - 1], z: droplet.z - 1}
+          } 
+        } else {
+          dropletPath.push(droplet)
+          break;
+        }
+        dropletPath.push(deltaHeight.lowestDrop)
+        droplet = deltaHeight.lowestDrop
+      }
+      console.log(dropletPath)
+      
+    }
+    for (let droplets = 0; droplets < 1; droplets++) {
+      genDroplet()
+    }
 
     for (let i = 0; i < size - 1; i++) {
       for (let j = 0; j < size - 1; j++) {
@@ -71,16 +136,16 @@ const Cube = (props: any) => {
         let col4 = heights[x][z] > -3 ? heights[x][z] > 0 ? heights[x][z] > 5 ? [0.8, 0.8, 0.8] : [0.5, 0.5, 0.5] : [0.4, 0.6, 0.2] : [0.5, 0.45, 0.4] 
         let col5 = heights[x][z + 1] > -3 ? heights[x][z + 1] > 0 ? heights[x][z + 1] > 5 ? [0.8, 0.8, 0.8] : [0.5, 0.5, 0.5] : [0.4, 0.6, 0.2] : [0.5, 0.45, 0.4] 
         let col6 = heights[x + 1][z + 1] > -3 ? heights[x + 1][z + 1] > 0 ? heights[x + 1][z + 1] > 5 ? [0.8, 0.8, 0.8] : [0.5, 0.5, 0.5] : [0.4, 0.6, 0.2] : [0.5, 0.45, 0.4] 
-        // for (let b = 0; b < roadArr.length; b++) {
-          //   if (roadArr[b].x == x && roadArr[b].z == z) {
-            //     col1 = [0.3, 0.25, 0.2]
-          //     col2 = [0.3, 0.25, 0.2]
-          //     col3 = [0.3, 0.25, 0.2]
-          //     col4 = [0.3, 0.25, 0.2]
-          //     col5 = [0.3, 0.25, 0.2]
-          //     col6 = [0.3, 0.25, 0.2]
-          //   }
-          // }
+        for (let b = 0; b < dropletPath.length; b++) {
+          if (dropletPath[b].x == x && dropletPath[b].z == z) {
+            col1 = [0.3, 0.25, 0.2]
+            col2 = [0.3, 0.25, 0.2]
+            col3 = [0.3, 0.25, 0.2]
+            col4 = [0.3, 0.25, 0.2]
+            col5 = [0.3, 0.25, 0.2]
+            col6 = [0.3, 0.25, 0.2]
+          }
+        }
           
           
           
@@ -121,6 +186,41 @@ const Cube = (props: any) => {
     console.log(vertices)
     return {verticesArr: vertices, colorAr: colorArr}
   }
+
+  const genDroplet = () => {
+    let dropletPath = []
+    const heights = props.array
+    const size = props.dimension 
+
+    let droplet = {x: Math.floor(Math.random() * size), y: 0, z: Math.floor(Math.random() * size)}
+    droplet.y = heights[droplet.x][droplet.z]
+
+    dropletPath.push(droplet)
+
+    while (droplet.y > - 4) {
+      if (heights[droplet.x + 1][droplet.z] < droplet.y) {
+        droplet = {x: droplet.x + 1, y: heights[droplet.x + 1][droplet.z], z: droplet.z}
+      } else if (heights[droplet.x][droplet.z + 1] < droplet.y) {
+        droplet = {x: droplet.x, y: heights[droplet.x][droplet.z + 1], z: droplet.z + 1}
+      } else if (heights[droplet.x + 1][droplet.z + 1] < droplet.y) {
+        droplet = {x: droplet.x + 1, y: heights[droplet.x + 1][droplet.z + 1], z: droplet.z + 1}
+      } else if (heights[droplet.x - 1][droplet.z] < droplet.y) {
+        droplet = {x: droplet.x - 1, y: heights[droplet.x - 1][droplet.z], z: droplet.z}
+      } else if (heights[droplet.x][droplet.z - 1] < droplet.y) {
+        droplet = {x: droplet.x, y: heights[droplet.x][droplet.z - 1], z: droplet.z - 1}
+      } else if (heights[droplet.x - 1][droplet.z - 1] < droplet.y) {
+        droplet = {x: droplet.x - 1, y: heights[droplet.x - 1][droplet.z - 1], z: droplet.z - 1}
+      } else {
+        dropletPath.push(droplet)
+        break;
+      }
+      dropletPath.push(droplet)
+    }
+
+    
+  }
+
+
   useEffect(() => {
     props.isLoaded(false)
     geomRef.current!.geometry.setFromPoints(drawVertices().verticesArr)
