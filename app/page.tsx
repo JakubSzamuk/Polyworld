@@ -78,7 +78,7 @@ export default function Home() {
         </div>
       </div>
       <div className='w-screen h-[50vh] hideLarge flex justify-center items-center absolute top-0'>
-        <p className='displayFont text-3xl w-[90%]'>This content is unavailable on mobile devices</p>
+        <p className='displayFont text-3xl w-[90%]'>This Terrain Generator is unavailable on mobile devices</p>
       </div>
     </div>
   )
