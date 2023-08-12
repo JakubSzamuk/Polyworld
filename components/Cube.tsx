@@ -14,14 +14,18 @@ const Cube = (props: any) => {
   const geomRef = useRef(null)
   const [treeArray, setTreeArray] = useState()
 
-  setInterval(() => {
-    genClouds()
-  }, 8000)
+  
+  
+  
+  // upcoming feature......
+  // setInterval(() => {
+  //   genClouds()
+  // }, 8000)
 
 
-  const genClouds = () => {
+  // const genClouds = () => {
 
-  }
+  // }
 
   const drawVertices = () => {
     const size = props.dimension 
@@ -57,12 +61,7 @@ const Cube = (props: any) => {
         
         let y00 = new THREE.Vector3(x - size / 2, heights[x][z], z - size / 2) 
         let y10 = new THREE.Vector3(x - size / 2, heights[x][z + 1], z - size / 2 + 1)
-        let y11 = new THREE.Vector3(x - size / 2 + 1, heights[x + 1][z + 1], z - size / 2 + 1)
-
-        
-
-        let currentCoords = {x: i, z: j}
-        
+        let y11 = new THREE.Vector3(x - size / 2 + 1, heights[x + 1][z + 1], z - size / 2 + 1)        
 
         
         
@@ -119,7 +118,7 @@ const Cube = (props: any) => {
 
 
     let colorArr = new Float32Array(tempArr)
-    
+    console.log(vertices)
     return {verticesArr: vertices, colorAr: colorArr}
   }
   useEffect(() => {
@@ -143,20 +142,19 @@ const Cube = (props: any) => {
     geomRef.current!.geometry.attributes.color.needsUpdate = true;
     geomRef.current!.geometry.computeVertexNormals();
     props.isLoaded(true)
-  }, [JSON.stringify(props)])
+  }, [JSON.stringify(props.regen)])
 
   return (
     <>
       
       <mesh ref={geomRef}>
         <bufferGeometry attach="geometry" />
-        {/* <meshStandardMaterial color={props.height > -0.3 ? props.height > 1.8 ? props.height > 3.8 ? "lime" : "green" : "brown" : "gray"} /> */}
         <meshStandardMaterial vertexColors={true} />
       </mesh>
       {
         treeArray ? (
-          treeArray.map((tree: object) => (
-            <group position={[tree.x, tree.y + 2, tree.z]}>
+          treeArray.map((tree: object, key) => (
+            <group key={key} position={[tree.x, tree.y + 2, tree.z]}>
               <mesh>
                 <sphereGeometry attach={"geometry"} />
                 <meshStandardMaterial attach={"material"} color={"green"} />
