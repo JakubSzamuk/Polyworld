@@ -46,55 +46,93 @@ const Cube = (props: any) => {
       const heights = props.array
       const size = props.dimension 
   
-      let droplet = {x: Math.floor(Math.random() * size), y: 0, z: Math.floor(Math.random() * size)}
+      let droplet = {x: Math.floor(Math.random() * size), y: 0, z: Math.floor(Math.random() * size), momentum: 0,  soilContent: 0}
       droplet.y = heights[droplet.x][droplet.z]
   
       dropletPath.push(droplet)
-      while (droplet.y > - 7) {
-        let deltaHeight = {value: 0, lowestDrop: {}}
+      while (droplet.y > - 7 && droplet.x > 0 && droplet.z > 0 && droplet.x < size - 1 && droplet.z < size - 1) {
+        let deltaHeight = {value: 0, lowestDrop: {}, pastDirection: {}}
+
+        let notStuck = false
+
         if (heights[droplet.x + 1][droplet.z] < droplet.y) {
           let tempDeltaHeight = droplet.y - heights[droplet.x + 1][droplet.z]
           
           if (tempDeltaHeight > deltaHeight.value) {
+            notStuck = true
             deltaHeight.value = tempDeltaHeight
-            deltaHeight.lowestDrop = {x: droplet.x + 1, y: heights[droplet.x + 1][droplet.z], z: droplet.z}
+            deltaHeight.lowestDrop = {...droplet, x: droplet.x + 1, y: heights[droplet.x + 1][droplet.z], z: droplet.z}
+            deltaHeight.pastDirection = () => {
+              return {x: droplet.x + 1, y: heights[droplet.x + 1][droplet.z], z: droplet.z}
+            }
           }
-        } else if (heights[droplet.x][droplet.z + 1] < droplet.y) {
+        } if (heights[droplet.x][droplet.z + 1] < droplet.y) {
           let tempDeltaHeight = droplet.y - heights[droplet.x][droplet.z + 1]
           
           if (tempDeltaHeight > deltaHeight.value) {
+            notStuck = true
             deltaHeight.value = tempDeltaHeight
-            deltaHeight.lowestDrop = {x: droplet.x, y: heights[droplet.x][droplet.z + 1], z: droplet.z + 1}
+            deltaHeight.lowestDrop = {...droplet, x: droplet.x, y: heights[droplet.x][droplet.z + 1], z: droplet.z + 1}
+            deltaHeight.pastDirection = () => {
+              return {x: droplet.x, y: heights[droplet.x][droplet.z + 1], z: droplet.z + 1}
+            }
           } 
-        } else if (heights[droplet.x + 1][droplet.z + 1] < droplet.y) {
+        } if (heights[droplet.x + 1][droplet.z + 1] < droplet.y) {
           let tempDeltaHeight = droplet.y - heights[droplet.x + 1][droplet.z + 1]
           
           if (tempDeltaHeight > deltaHeight.value) {
+            notStuck = true
             deltaHeight.value = tempDeltaHeight
-            deltaHeight.lowestDrop = {x: droplet.x + 1, y: heights[droplet.x + 1][droplet.z + 1], z: droplet.z + 1}
+            deltaHeight.lowestDrop = {...droplet, x: droplet.x + 1, y: heights[droplet.x + 1][droplet.z + 1], z: droplet.z + 1}
+            deltaHeight.pastDirection = () => {
+              return {x: droplet.x + 1, y: heights[droplet.x + 1][droplet.z + 1], z: droplet.z + 1}
+            }
           } 
-        } else if (heights[droplet.x - 1][droplet.z] < droplet.y) {
+        } if (heights[droplet.x - 1][droplet.z] < droplet.y) {
           let tempDeltaHeight = droplet.y - heights[droplet.x - 1][droplet.z]
           
           if (tempDeltaHeight > deltaHeight.value) {
+            notStuck = true
             deltaHeight.value = tempDeltaHeight
-            deltaHeight.lowestDrop = {x: droplet.x - 1, y: heights[droplet.x - 1][droplet.z], z: droplet.z}
+            deltaHeight.lowestDrop = {...droplet, x: droplet.x - 1, y: heights[droplet.x - 1][droplet.z], z: droplet.z}
+            deltaHeight.pastDirection = () => {
+              return {x: droplet.x - 1, y: heights[droplet.x - 1][droplet.z], z: droplet.z}
+            }
           } 
-        } else if (heights[droplet.x][droplet.z - 1] < droplet.y) {
+        } if (heights[droplet.x][droplet.z - 1] < droplet.y) {
           let tempDeltaHeight = droplet.y - heights[droplet.x][droplet.z - 1]
           
           if (tempDeltaHeight > deltaHeight.value) {
+            notStuck = true
             deltaHeight.value = tempDeltaHeight
-            deltaHeight.lowestDrop = {x: droplet.x, y: heights[droplet.x][droplet.z - 1], z: droplet.z - 1}
+            deltaHeight.lowestDrop = {...droplet, x: droplet.x, y: heights[droplet.x][droplet.z - 1], z: droplet.z - 1}
+            deltaHeight.pastDirection = () => {
+              return {x: droplet.x, y: heights[droplet.x][droplet.z - 1], z: droplet.z - 1}
+            }
           } 
-        } else if (heights[droplet.x - 1][droplet.z - 1] < droplet.y) {
+        } if (heights[droplet.x - 1][droplet.z - 1] < droplet.y) {
           let tempDeltaHeight = droplet.y - heights[droplet.x - 1][droplet.z - 1]
           
           if (tempDeltaHeight > deltaHeight.value) {
+            notStuck = true
             deltaHeight.value = tempDeltaHeight
-            deltaHeight.lowestDrop = {x: droplet.x - 1, y: heights[droplet.x - 1][droplet.z - 1], z: droplet.z - 1}
+            deltaHeight.lowestDrop = {...droplet, x: droplet.x - 1, y: heights[droplet.x - 1][droplet.z - 1], z: droplet.z - 1}
+            deltaHeight.pastDirection = () => {
+              return {x: droplet.x - 1, y: heights[droplet.x - 1][droplet.z - 1], z: droplet.z - 1}
+            }
           } 
-        } else {
+        } if (!notStuck) {
+          while (droplet.momentum > 0) {
+            let direction = Math.random()
+            let directionXZ = Math.random()
+
+            if (direction > 0.5) {
+              droplet = directionXZ > 0.5 ? {...droplet, x: droplet.x + 1, y: heights[droplet.x + 1][droplet.z] } : {...droplet, y: heights[droplet.x][droplet.z + 1], z: droplet.z + 1}
+            } else {
+              droplet = directionXZ > 0.5 ? {...droplet, x: droplet.x - 1, y: heights[droplet.x - 1][droplet.z] } : {...droplet, y: heights[droplet.x][droplet.z - 1], z: droplet.z - 1}
+            }
+
+          }
           dropletPath.push(droplet)
           break;
         }
