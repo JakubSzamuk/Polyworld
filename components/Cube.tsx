@@ -43,7 +43,7 @@ const Cube = (props: any) => {
  
   const drawVertices = () => {
     const size = props.dimension 
-    const heights = props.array
+    let heights = props.array
     const roadNoise = createNoise2D()
 
 
@@ -75,23 +75,6 @@ const Cube = (props: any) => {
 
         let notStuck = false
         const doHeightChecks = () => {
-          // if (heights[droplet.x + 1][droplet.z] < droplet.y) {
-          //   applyDropletChange(1, 0)
-          // } if (heights[droplet.x][droplet.z + 1] < droplet.y) {
-          //   applyDropletChange(0, 1)
-          // } if (heights[droplet.x + 1][droplet.z + 1] < droplet.y) {
-          //   applyDropletChange(1, 1)
-          // } if (heights[droplet.x - 1][droplet.z] < droplet.y) {
-          //   applyDropletChange(-1, 0)
-          // } if (heights[droplet.x][droplet.z - 1] < droplet.y) {
-          //   applyDropletChange(0, -1)
-          // } if (heights[droplet.x - 1][droplet.z - 1] < droplet.y) {
-          //   applyDropletChange(-1, -1)
-          // } if (deltaHeight.value > 0.8 && droplet.momentum < 3) {
-          //   droplet.momentum = droplet.momentum + 1
-          // }
-
-
           for (let i = -1; i < 2; i++) {
             for (let j = -1; j < 2; j++) {
               applyDropletChange(i, j)
@@ -116,40 +99,67 @@ const Cube = (props: any) => {
         doHeightChecks()
         droplet = {...droplet, ...deltaHeight.lowestDrop, momentum: droplet.momentum}
         // console.log(droplet)
-        
+        const addSurrounds = (isMoving: boolean) => {
+          for (let x0 = -1; x0 < 2; x0++) {
+            for (let z0 = -1; z0 < 2; z0++) {
+
+              // heights[droplet.x + x0][droplet.z + z0] += droplet.soilContent / 300 / (isMoving ? droplet.momentum : 1)
+              // heights[droplet.x + x0][droplet.z + z0] += droplet.soilContent / (isMoving ? droplet.momentum : 1)
+
+              heights[droplet.x + x0][droplet.z + z0] += 0.4 / (isMoving ? droplet.momentum : 1)
+            }
+          }
+
+          // heights[droplet.x][droplet.z] += 1
+        }
         if (!notStuck) {
           while (droplet.momentum > 0 && droplet.x > 0 && droplet.z > 0 && droplet.x < size - 2 && droplet.z < size - 2) {
             droplet = {...droplet, ...deltaHeight.pastDirection()}
+            
+            
+            addSurrounds(true)
+            
             droplet.momentum -= 1
             dropletPath.push(droplet)
+            
             doHeightChecks() 
-            if (deltaHeight.value > 0) {
+            let doContinue = true
+            for (let i = 0; i < dropletPath.length; i++) {
+              if (dropletPath[i].x == deltaHeight.lowestDrop.x && dropletPath[i].z == deltaHeight.lowestDrop.z) {
+                doContinue = false
+                stopped = true
+                droplet.reachedBottom = true
+              }
+            }
+            if (deltaHeight.value > 0 && doContinue) {
               continue dropLetCheck
             }
           }
           if (droplet.momentum == 0) {
+            addSurrounds(false)
             stopped = true
             droplet.reachedBottom = true
           }
         } else {
+          let soilAmount = deltaHeight.value - (deltaHeight.value / 10) * 0.6
+          console.log(soilAmount)
+          droplet.soilContent += soilAmount
+          // let currentHeight = heights[droplet.x][droplet.z]
+          // console.log(currentHeight)
+          // heights[droplet.x][droplet.z] = currentHeight - soilAmount
+          // heights[droplet.x][droplet.z] = currentHeight
+          // console.log(heights[droplet.x][droplet.z], "////", droplet.soilContent)
+          
           dropletPath.push(droplet)
+          
         }
         
-      }
-      for (let z = 0; z < dropletPath.length; z++) {
-        droplet = dropletPath[z]
-        if (!droplet.reachedBottom) {
-          heights[droplet.x][droplet.z] -= 0.4
-        } else {
-          heights[droplet.x][droplet.z] += 0.4
-        }
-      }
-
-      
+      }      
     }
 
     for (let droplets = 0; droplets < 1; droplets++) {
       genDroplet()
+      console.log(dropletPath)
     }
 
 
@@ -181,16 +191,16 @@ const Cube = (props: any) => {
         let col4 = heights[x][z] > -3 ? heights[x][z] > 0 ? heights[x][z] > 5 ? [0.8, 0.8, 0.8] : [0.5, 0.5, 0.5] : [0.4, 0.6, 0.2] : [0.5, 0.45, 0.4] 
         let col5 = heights[x][z + 1] > -3 ? heights[x][z + 1] > 0 ? heights[x][z + 1] > 5 ? [0.8, 0.8, 0.8] : [0.5, 0.5, 0.5] : [0.4, 0.6, 0.2] : [0.5, 0.45, 0.4] 
         let col6 = heights[x + 1][z + 1] > -3 ? heights[x + 1][z + 1] > 0 ? heights[x + 1][z + 1] > 5 ? [0.8, 0.8, 0.8] : [0.5, 0.5, 0.5] : [0.4, 0.6, 0.2] : [0.5, 0.45, 0.4] 
-        // for (let b = 0; b < dropletPath.length; b++) {
-        //   if (dropletPath[b].x == x && dropletPath[b].z == z) {
-        //     col1 = [0.3, 0.25, 0.2]
-        //     col2 = [0.3, 0.25, 0.2]
-        //     col3 = [0.3, 0.25, 0.2]
-        //     col4 = [0.3, 0.25, 0.2]
-        //     col5 = [0.3, 0.25, 0.2]
-        //     col6 = [0.3, 0.25, 0.2]
-        //   }
-        // }
+        for (let b = 0; b < dropletPath.length; b++) {
+          if (dropletPath[b].x == x && dropletPath[b].z == z) {
+            col1 = [0.3, 0.25, 0.2]
+            col2 = [0.3, 0.25, 0.2]
+            col3 = [0.3, 0.25, 0.2]
+            col4 = [0.3, 0.25, 0.2]
+            col5 = [0.3, 0.25, 0.2]
+            col6 = [0.3, 0.25, 0.2]
+          }
+        }
           
           
           
