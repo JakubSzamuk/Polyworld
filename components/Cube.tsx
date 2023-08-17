@@ -142,12 +142,13 @@ const Cube = (props: any) => {
           }
         } else {
           let soilAmount = deltaHeight.value - (deltaHeight.value / 10) * 0.6
-          console.log(soilAmount)
+
           droplet.soilContent += soilAmount
           // let currentHeight = heights[droplet.x][droplet.z]
           // console.log(currentHeight)
           // heights[droplet.x][droplet.z] = currentHeight - soilAmount
-          // heights[droplet.x][droplet.z] = currentHeight
+          // console.log(heights[droplet.x][droplet.z])
+          // heights[droplet.x][droplet.z] -= 1
           // console.log(heights[droplet.x][droplet.z], "////", droplet.soilContent)
           
           dropletPath.push(droplet)
@@ -159,7 +160,7 @@ const Cube = (props: any) => {
 
     for (let droplets = 0; droplets < 1; droplets++) {
       genDroplet()
-      console.log(dropletPath)
+
     }
 
 
