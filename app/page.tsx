@@ -13,7 +13,7 @@ export default function Home() {
 
   const [waterLevel, setWaterLevel] = useState(-2)
   const [amplitude, setAmplitude] = useState(8)
-  const [size, setSize] = useState(200)
+  const [size, setSize] = useState(40)
   const [frequency, setFrequency] = useState(0.06)
   const [showArray, setShowArray] = useState()
   const [normalise, setNormalise] = useState(false)

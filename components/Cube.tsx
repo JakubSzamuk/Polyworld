@@ -158,9 +158,8 @@ const Cube = (props: any) => {
       }      
     }
 
-    for (let droplets = 0; droplets < 1; droplets++) {
+    for (let droplets = 0; droplets < 300; droplets++) {
       genDroplet()
-
     }
 
 
